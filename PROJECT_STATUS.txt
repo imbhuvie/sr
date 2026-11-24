@@ -1,0 +1,9 @@
+Project: ScreenReaderAndroid
+Version: 1.0.0 source starter
+Language: Kotlin
+Android Gradle Plugin: 8.7.3
+Kotlin: 2.0.21
+Compile SDK: 35
+Min SDK: 26
+Database: Room / SQLite
+Build verification: Not run (Android SDK and Gradle are unavailable in the generation environment).
