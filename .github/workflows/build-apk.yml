@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - main
+      - master
 
 permissions:
   contents: read
@@ -32,18 +32,30 @@ jobs:
       - name: Verify Android SDK
         run: |
           echo "Android SDK: $ANDROID_HOME"
-          ls "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
-          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --version
+          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --version
 
-      - name: Accept Android SDK licenses
+      - name: Install Android SDK packages
         run: |
-          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses || true
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
+          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager \
+            "platforms;android-35" \
+            "build-tools;35.0.0" \
+            "platform-tools"
 
-      - name: Set up Gradle permissions
-        run: chmod +x ./gradlew
+      - name: Set up Gradle 8.9
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Verify project structure
+        run: |
+          ls -la
+          test -f settings.gradle.kts
+          test -f build.gradle.kts
+          test -f app/build.gradle.kts
 
       - name: Build Debug APK
-        run: ./gradlew assembleDebug --stacktrace
+        run: gradle assembleDebug --stacktrace
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
